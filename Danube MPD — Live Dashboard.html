@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Danube MPD — Project Performance Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#22272e;color:#cdd9e5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:flex;min-height:100vh;font-size:13px}
+  .sidebar{width:52px;background:#1c2128;display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:6px;border-right:1px solid #373e47;flex-shrink:0}
+  .logo{width:32px;height:32px;background:#5b9bff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;margin-bottom:12px}
+  .nav-icon{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;color:#768390;transition:.15s;font-size:16px}
+  .nav-icon:hover,.nav-icon.active{background:#2d333b;color:#cdd9e5}
+  .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+  .header{background:#1c2128;border-bottom:1px solid #373e47;padding:12px 20px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+  .header-title{font-size:18px;font-weight:600;color:#fff;flex:1}
+  .breadcrumb{color:#768390;font-size:12px}.breadcrumb span{color:#cdd9e5}
+  .badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+  .badge-amber{background:rgba(227,179,65,.15);color:#e3b341;border:1px solid rgba(227,179,65,.3)}
+  .badge-red{background:rgba(248,81,73,.15);color:#f85149;border:1px solid rgba(248,81,73,.3)}
+  .badge-green{background:rgba(63,185,80,.15);color:#3fb950;border:1px solid rgba(63,185,80,.3)}
+  .header-meta{font-size:11px;color:#768390;text-align:right;line-height:1.6}
+  .avatar-row{display:flex;gap:4px;margin-left:8px}
+  .avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;border:2px solid #1c2128}
+  .content{flex:1;overflow-y:auto;padding:16px 20px}
+  .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+  .kpi{background:#2d333b;border:1px solid #373e47;border-radius:12px;padding:14px 16px}
+  .kpi-label{font-size:11px;color:#768390;margin-bottom:8px}
+  .kpi-value{font-size:28px;font-weight:700;color:#fff;line-height:1}
+  .kpi-sub{font-size:11px;color:#768390;margin-top:4px}
+  .kpi-bar{height:3px;background:#373e47;border-radius:2px;margin-top:10px}
+  .kpi-bar-fill{height:100%;border-radius:2px}
+  .tabs{display:flex;gap:2px;margin-bottom:16px;background:#1c2128;border-radius:10px;padding:3px;width:fit-content}
+  .tab{padding:6px 16px;border-radius:8px;cursor:pointer;color:#768390;font-size:12px;font-weight:500;transition:.15s}
+  .tab.active{background:#2d333b;color:#cdd9e5}
+  .grid-2{display:grid;grid-template-columns:1.4fr 1fr;gap:12px}
+  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  .card{background:#2d333b;border:1px solid #373e47;border-radius:12px;padding:16px}
+  .card-title{font-size:12px;font-weight:600;color:#cdd9e5;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+  .card-sub{font-size:11px;color:#768390;margin-bottom:12px}
+  .gantt-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #373e47}
+  .gantt-row:last-child{border-bottom:none}
+  .gantt-name{font-size:11px;color:#cdd9e5;width:200px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gantt-name.section{font-weight:700;font-size:10px;color:#768390;letter-spacing:.5px;text-transform:uppercase}
+  .gantt-track{flex:1;height:18px;background:#373e47;border-radius:4px;position:relative}
+  .gantt-bar{height:100%;border-radius:4px;display:flex;align-items:center;padding:0 6px;font-size:10px;font-weight:600;color:#fff;min-width:2px}
+  .gantt-bar.complete{background:#3fb950}.gantt-bar.progress{background:#5b9bff}
+  .gantt-bar.atrisk{background:#e3b341}.gantt-bar.notstarted{background:#373e47;color:#555}
+  .gantt-pct{font-size:10px;font-weight:600;color:#768390;width:32px;text-align:right;flex-shrink:0}
+  .ai-panel{background:#1c2128;border:1px solid #373e47;border-radius:12px;padding:16px}
+  .ai-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(91,155,255,.15);border:1px solid rgba(91,155,255,.3);border-radius:20px;padding:2px 10px;font-size:10px;font-weight:600;color:#5b9bff;margin-bottom:10px}
+  .ai-headline{font-size:14px;font-weight:700;color:#fff;line-height:1.4;margin-bottom:8px}
+  .ai-body{font-size:12px;color:#768390;line-height:1.6;margin-bottom:12px}
+  .ai-stats{display:flex;gap:16px;margin-bottom:14px}
+  .ai-stat-val{font-size:15px;font-weight:700}.ai-stat-label{font-size:10px;color:#768390;margin-top:1px}
+  .btn{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:.15s}
+  .btn-primary{background:#5b9bff;color:#fff}.btn-ghost{background:#373e47;color:#cdd9e5}
+  .btn-row{display:flex;gap:8px}
+  .disc-table{width:100%;border-collapse:collapse}
+  .disc-table th{font-size:10px;color:#768390;font-weight:600;padding:6px 8px;border-bottom:1px solid #373e47;text-align:right}
+  .disc-table th:first-child{text-align:left}
+  .disc-table td{padding:7px 8px;border-bottom:1px solid #1c2128;font-size:11px;text-align:right;vertical-align:middle}
+  .disc-table td:first-child{text-align:left;color:#cdd9e5}
+  .disc-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle}
+  .cat-badge{font-size:9px;background:#373e47;color:#768390;border-radius:4px;padding:1px 5px;margin-left:4px;vertical-align:middle}
+  .var-pos{color:#3fb950;font-weight:600}.var-neg{color:#f85149;font-weight:600}.var-warn{color:#e3b341;font-weight:600}
+  .mini-bar-track{width:80px;height:6px;background:#373e47;border-radius:3px}
+  .mini-bar-fill{height:100%;border-radius:3px}
+  .team-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #373e47}
+  .team-row:last-child{border-bottom:none}
+  .team-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+  .gate-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #373e47}
+  .gate-item:last-child{border-bottom:none}
+  .gate-dot{width:14px;height:14px;border-radius:50%;border:2px solid #373e47;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:8px}
+  .gate-dot.complete{background:#3fb950;border-color:#3fb950;color:#fff}
+  .gate-dot.atrisk{background:#e3b341;border-color:#e3b341}
+  .gate-dot.blocked{background:#f85149;border-color:#f85149}
+  .gate-dot.upcoming{background:transparent;border-color:#5b9bff}
+  .risk-card{border:1px solid #373e47;border-radius:10px;padding:12px;margin-bottom:10px;border-left-width:3px}
+  .risk-card.high{border-left-color:#f85149}.risk-card.medium{border-left-color:#e3b341}.risk-card.low{border-left-color:#3fb950}
+  .risk-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+  .risk-badge{padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700}
+  .risk-badge.high{background:rgba(248,81,73,.15);color:#f85149;border:1px solid rgba(248,81,73,.3)}
+  .risk-badge.medium{background:rgba(227,179,65,.15);color:#e3b341;border:1px solid rgba(227,179,65,.3)}
+  .ewn-banner{background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.3);border-radius:10px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px}
+  .ewn-btn{padding:5px 12px;background:rgba(248,81,73,.2);border:1px solid rgba(248,81,73,.4);border-radius:6px;color:#f85149;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap}
+  .mom-action{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid #373e47}
+  .mom-action:last-child{border-bottom:none}
+  .mom-status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+  .mom-status-dot.open{background:#e3b341}.mom-status-dot.overdue{background:#f85149}.mom-status-dot.complete{background:#3fb950}
+  .screen{display:none}.screen.active{display:block}
+  .chart-wrap{position:relative;height:180px}.chart-wrap-sm{position:relative;height:120px}
+  .content::-webkit-scrollbar{width:4px}.content::-webkit-scrollbar-track{background:#1c2128}.content::-webkit-scrollbar-thumb{background:#373e47;border-radius:2px}
+  .filter-btn{padding:4px 12px;border-radius:20px;border:1px solid #373e47;background:transparent;color:#768390;font-size:11px;cursor:pointer;margin-right:6px;margin-bottom:12px}
+  .filter-btn.active{background:#2d333b;color:#cdd9e5;border-color:#5b9bff}
+  .section-header{font-size:11px;font-weight:700;color:#768390;letter-spacing:.5px;text-transform:uppercase;padding:8px 0 4px;margin-top:4px}
+  .inv-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #373e47;font-size:11px}
+  .inv-row:last-child{border-bottom:none}
+  .loading{display:flex;align-items:center;justify-content:center;height:200px;color:#768390;font-size:13px}
+  .update-bar{background:#1c2128;border-bottom:1px solid #373e47;padding:6px 20px;font-size:11px;color:#768390;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+  .footer{padding:8px 20px;border-top:1px solid #373e47;font-size:10px;color:#444c56;display:flex;justify-content:space-between;flex-shrink:0}
+  .obs-item{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid #373e47}
+  .obs-item:last-child{border-bottom:none}
+  .pulse{animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="logo">D</div>
+  <div class="nav-icon active" onclick="setTab('programme')" title="Programme">📅</div>
+  <div class="nav-icon" onclick="setTab('financial')" title="Financial">📊</div>
+  <div class="nav-icon" onclick="setTab('resources')" title="Resources">👥</div>
+  <div class="nav-icon" onclick="setTab('risks')" title="Risks">⚠️</div>
+  <div class="nav-icon" onclick="setTab('mom')" title="MOM Feed">💬</div>
+</div>
+
+<div class="main">
+  <div class="header">
+    <div style="flex:1">
+      <div class="breadcrumb">Projects → <span>Danube MPD</span></div>
+      <div class="header-title">Master Plan Development — Danube Properties</div>
+    </div>
+    <span class="badge badge-amber" id="statusBadge">⬤ Loading...</span>
+    <div class="header-meta" id="headerMeta">Loading data...</div>
+    <div class="avatar-row">
+      <div class="avatar" style="background:#5b9bff" title="Harkeerat Singh">HS</div>
+      <div class="avatar" style="background:#8a7fff" title="Pratiksha Singh">PS</div>
+      <div class="avatar" style="background:#3fb950" title="Varsha Venkatesh">VV</div>
+      <div class="avatar" style="background:#e3b341" title="Queenie Leeragos">QL</div>
+      <div class="avatar" style="background:#f85149" title="Rohit Sewani">RS</div>
+    </div>
+  </div>
+
+  <div class="update-bar">
+    <span id="lastUpdated">⟳ Loading project data...</span>
+    <span style="color:#5b9bff;cursor:pointer" onclick="loadAllData()">↻ Refresh</span>
+  </div>
+
+  <div class="content">
+    <!-- KPI CARDS -->
+    <div class="kpi-row" id="kpiRow"><div class="loading pulse" style="grid-column:1/-1">Loading dashboard data...</div></div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <div class="tab active" onclick="setTab('programme')">📅 Programme</div>
+      <div class="tab" onclick="setTab('financial')">📊 Financial</div>
+      <div class="tab" onclick="setTab('resources')">👥 Resources</div>
+      <div class="tab" onclick="setTab('risks')">⚠️ Risk Register</div>
+      <div class="tab" onclick="setTab('mom')">💬 MOM Feed</div>
+    </div>
+
+    <div class="screen active" id="screen-programme"><div class="loading pulse">Loading programme data...</div></div>
+    <div class="screen" id="screen-financial"><div class="loading pulse">Loading financial data...</div></div>
+    <div class="screen" id="screen-resources"><div class="loading pulse">Loading resource data...</div></div>
+    <div class="screen" id="screen-risks"><div class="loading pulse">Loading risk register...</div></div>
+    <div class="screen" id="screen-mom"><div class="loading pulse">Loading MOM feed...</div></div>
+  </div>
+
+  <div class="footer">
+    <span>Danube MPD — KEZAD · AE0069879.2288 · WSP Middle East</span>
+    <span>PM: Harkeerat Singh · Update via Telegram bot or paste MOM into Claude</span>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ─────────────────────────────────────────────────────────────────
+// When hosted on GitHub Pages, set this to your repo's raw base URL:
+// e.g. https://raw.githubusercontent.com/YOUR_USERNAME/danube-dashboard/main/data
+// For local use, leave as './data'
+const DATA_BASE = window.location.hostname === 'localhost' || window.location.protocol === 'file:'
+  ? './data'
+  : './data'; // GitHub Pages: same folder, relative path works
+
+let DATA = {}; // Populated after fetch
+let charts = {};
+
+// ── FETCH ALL DATA ──────────────────────────────────────────────────────────
+async function loadAllData() {
+  document.getElementById('lastUpdated').textContent = '⟳ Refreshing...';
+  try {
+    const [prog, cost, res, risks, gates, mom] = await Promise.all([
+      fetchJSON('programme.json'),
+      fetchJSON('cost_2026_05.json'),
+      fetchJSON('resources_2026_05.json'),
+      fetchJSON('risks.json'),
+      fetchJSON('stage_gates.json'),
+      fetchJSON('mom_log.json'),
+    ]);
+    DATA = { prog, cost, res, risks, gates, mom };
+    renderAll();
+    document.getElementById('lastUpdated').textContent =
+      '✓ Data loaded · Last updated: ' + (prog.meta?.last_updated || 'Unknown');
+  } catch(e) {
+    // Fallback to embedded data if fetch fails (local file:// usage)
+    console.warn('Fetch failed, using embedded data:', e.message);
+    DATA = EMBEDDED;
+    renderAll();
+    document.getElementById('lastUpdated').textContent = '⚠ Using embedded data (open via server for live updates)';
+  }
+}
+
+async function fetchJSON(file) {
+  const res = await fetch(`${DATA_BASE}/${file}?v=${Date.now()}`);
+  if (!res.ok) throw new Error(`${file} not found`);
+  return res.json();
+}
+
+// ── EMBEDDED FALLBACK DATA (updated 13 Jun 2026 — MOM-PS-0010) ─────────────
+const EMBEDDED = {
+  prog: {"meta":{"current_week":11,"total_weeks":29,"project_start":"2026-04-03","project_end":"2026-10-31","overall_status":"at_risk","last_updated":"2026-06-13","status_reason":"Contract signed 11 Jun. Full CMP production underway. ADPG meeting critical path this week."},"stages":[{"id":"S0","name":"INCEPTION","tasks":[{"id":"T1","name":"Project inception","planned_start_wk":0,"planned_end_wk":1,"progress_pct":100,"status":"complete"},{"id":"T2","name":"Return Brief V7 & Design Freeze","planned_start_wk":1,"planned_end_wk":4,"progress_pct":100,"status":"complete"}]},{"id":"S1","name":"STAGE 1 — CONCEPT MASTER PLAN","tasks":[{"id":"T3","name":"CMP design (Option 3B)","planned_start_wk":2,"planned_end_wk":10,"progress_pct":60,"status":"in_progress","notes":"Option 3B unanimously confirmed 11 Jun — 100% GFA utilisation"},{"id":"T4","name":"Transport & utility modelling","planned_start_wk":3,"planned_end_wk":10,"progress_pct":35,"status":"at_risk","notes":"Front-loading required — CMP submission Wk-11 is 1 week away"},{"id":"T5","name":"ITC / DMT submission prep","planned_start_wk":7,"planned_end_wk":11,"progress_pct":10,"status":"at_risk","notes":"New DMT workaround: Phase 1 = 10% land, ADPG letter required this week"}]},{"id":"S1R","name":"AUTHORITY REVIEW — CMP","tasks":[{"id":"T6","name":"CMP authority review","planned_start_wk":11,"planned_end_wk":15,"progress_pct":0,"status":"not_started"}]},{"id":"S2","name":"STAGE 2 — DETAILED MASTER PLAN","tasks":[{"id":"T7","name":"DMP design","planned_start_wk":15,"planned_end_wk":22,"progress_pct":0,"status":"not_started"},{"id":"T8","name":"DMP submission package","planned_start_wk":21,"planned_end_wk":24,"progress_pct":0,"status":"not_started"}]},{"id":"S2R","name":"AUTHORITY REVIEW — DMP","tasks":[{"id":"T9","name":"DMP authority sign-off","planned_start_wk":24,"planned_end_wk":29,"progress_pct":0,"status":"not_started","target_date":"2026-10-31"}]}],"ai_schedule_analysis":{"weeks_behind_plan":2,"hours_variance_pct":-75,"model_confidence_pct":88,"top_recommendation":"Contract signed 11 Jun — team fully unblocked. Critical: (1) ADPG meeting this week for DMT path. (2) Issue Stage 1B CMP presentation by 16 Jun. (3) Front-load Transport Modelling — Wk-11 CMP submission is 1 week away. (4) UK consultant governance must be locked before they start.","critical_path_float_weeks":1.0}},
+  cost: {"meta":{"month":"2026-05","last_updated":"2026-06-13","total_fee_aed":9500000,"stage_1a_fee":950000,"stage_1a_status":"invoiced","stage_1a_invoice_issued":true,"stage_1a_invoice_date":"2026-06-13"},"summary":{"planned_c2c_to_date_aed":1919695,"actual_to_date_aed":588003,"spend_gap_pct":-69,"may_actual_aed":266285,"apr_actual_aed":321718},"weekly_hours":[{"week_ending":"2026-04-03","hours":4},{"week_ending":"2026-04-10","hours":396},{"week_ending":"2026-04-17","hours":365},{"week_ending":"2026-04-24","hours":378},{"week_ending":"2026-05-01","hours":435},{"week_ending":"2026-05-08","hours":279},{"week_ending":"2026-05-15","hours":214},{"week_ending":"2026-05-22","hours":108},{"week_ending":"2026-05-29","hours":20}],"total_hours_logged":2198,"planned_hours_to_date":8809,"hours_variance_pct":-75,"disciplines":[{"name":"Transport Planning","cat":"T&I","color":"#f85149","aprC2c":327118,"aprAct":48037,"mayC2c":309806,"mayAct":29677,"toDate":77715,"var":-39},{"name":"DPUD","cat":"AS","color":"#8a7fff","aprC2c":221514,"aprAct":139728,"mayC2c":212407,"mayAct":131085,"toDate":270813,"var":11},{"name":"Landscape","cat":"P&B","color":"#3fb950","aprC2c":109991,"aprAct":38567,"mayC2c":99681,"mayAct":53096,"toDate":91663,"var":-9},{"name":"Dry Utilities","cat":"T&I","color":"#e3b341","aprC2c":68824,"aprAct":22733,"mayC2c":75942,"mayAct":15347,"toDate":38079,"var":-21},{"name":"Roads","cat":"T&I","color":"#f0883e","aprC2c":40059,"aprAct":1197,"mayC2c":35424,"mayAct":788,"toDate":1985,"var":-50},{"name":"Compliance","cat":"T&I","color":"#5b9bff","aprC2c":36219,"aprAct":4878,"mayC2c":32926,"mayAct":6402,"toDate":11281,"var":-36},{"name":"Sustainability","cat":"AS","color":"#56d364","aprC2c":32461,"aprAct":20056,"mayC2c":30724,"mayAct":9657,"toDate":29713,"var":-4},{"name":"Wet Utilities","cat":"T&I","color":"#79c0ff","aprC2c":27557,"aprAct":15256,"mayC2c":33370,"mayAct":7037,"toDate":22294,"var":-9},{"name":"Environment","cat":"AS","color":"#b694ff","aprC2c":12315,"aprAct":0,"mayC2c":46119,"mayAct":0,"toDate":0,"var":-21},{"name":"FLS","cat":"P&B","color":"#ff7b72","aprC2c":27330,"aprAct":1935,"mayC2c":30732,"mayAct":1161,"toDate":3097,"var":-42},{"name":"SRM","cat":"P&B","color":"#ffa657","aprC2c":28245,"aprAct":11428,"mayC2c":29251,"mayAct":5806,"toDate":17233,"var":-19},{"name":"Dry Utilities (Gas)","cat":"T&I","color":"#a5d6ff","aprC2c":28534,"aprAct":17903,"mayC2c":23146,"mayAct":6227,"toDate":24129,"var":-9}]},
+  res: {"meta":{"month":"2026-05","total_hours_logged":2198,"planned_hours":8809,"avg_hours_per_week":147,"unforecasted_total_hours":243},"team":[{"ini":"HS","name":"Harkeerat Singh","role":"Project Manager","hours":294,"color":"#5b9bff","fore":true},{"ini":"PS","name":"Pratiksha Singh","role":"Urban Design","hours":263,"color":"#8a7fff","fore":true},{"ini":"VV","name":"Varsha Venkatesh","role":"Urban Design","hours":238,"color":"#3fb950","fore":true},{"ini":"QL","name":"Queenie Leeragos","role":"DPUD / Planning","hours":167,"color":"#e3b341","fore":true},{"ini":"BW","name":"Besty Wahyuniarti","role":"Urban Design","hours":122,"color":"#f0883e","fore":true},{"ini":"RS","name":"Rohit Sewani","role":"Technical Director","hours":112,"color":"#f85149","fore":true},{"ini":"RA","name":"Reem Alshamsi","role":"Planning","hours":99,"color":"#56d364","fore":true},{"ini":"HA","name":"Hafsah Alderei","role":"Urban Design","hours":90,"color":"#79c0ff","fore":false},{"ini":"AM","name":"Akshay Muralidharan","role":"Transport Planning","hours":83,"color":"#b694ff","fore":true}],"key_observations":["Contract signed 11 Jun 2026 — work-at-risk phase formally closed. Full team unblocked.","Stage 1a invoice (AED 950,000) issued 13 Jun 2026. VAT cert received 12 Jun.","Option 3B unanimously confirmed — 100% GFA, hybrid density (villas + G+5 gateway apartments).","Landscape Option 1 (water-centric active landscape) preferred by design team.","New DMT strategy: Phase 1 submission as 10% land pocket — ADPG facilitation letter required this week.","UK design consultant incoming — WSP governance framework established; onboarding workshop to be scheduled."]},
+  risks: {"meta":{"last_updated":"2026-06-13","total_risks":10,"open":9,"closed":1,"high":5,"medium":4},"risks":[{"id":"R1","title":"Signed contract copy not received","rating":"Medium","trend":"improving","owner":"Danube","date":"11 Jun","desc":"Contract confirmed signed at MOM-006 (11 Jun) by Mr. Ghayyour — work-at-risk CLOSED. Signed copy not yet received by WSP as of 13 Jun.","mitigate":"Chase Danube urgently. Stage 1a invoice issued 13 Jun. Signed copy needed for WSP records.","notes":"MAJOR PROGRESS: Contract signed. VAT cert received 12 Jun. Invoice issued 13 Jun. Risk downgraded High → Medium."},{"id":"R2","title":"GFA volatility & design desync","rating":"High","trend":"stable","owner":"WSP","date":"27 Mar","desc":"Post-freeze footprint tweaks reset transport models, utility calcs and ITC clocks.","mitigate":"Design Freeze 1 enforced. Option 3B unanimously confirmed 11 Jun — 100% GFA.","notes":""},{"id":"R3","title":"Absence of Affection Plan — DMT workaround active","rating":"High","trend":"improving","owner":"WSP / Danube","date":"26 Mar","desc":"Full Affection Plan cannot be issued until 100% land transfer from ADPG. 79 days open. New workaround strategy agreed 11 Jun.","mitigate":"NEW STRATEGY: (1) ADPG alignment meeting this week — obtain facilitation letter. (2) Submit Phase 1 as 10% land package with access point. (3) Formal DMT/ITC inquiry post ADPG sign-off.","notes":"ADPG meeting is now critical path — must happen w/c 15 Jun."},{"id":"R4","title":"Baseline data inaccuracy","rating":"High","trend":"stable","owner":"Danube","date":"17 Mar","desc":"Designs depend on client topo/utility surveys. Late inaccuracies make civil work abortive.","mitigate":"RFI.018 issued for new topo survey of updated rectangular plot boundaries.","notes":""},{"id":"R5","title":"DMT community facility mandates","rating":"High","trend":"stable","owner":"WSP","date":"11 Mar","desc":"Residential-heavy plan may breach DMT mandatory CF quotas.","mitigate":"Caveat in Brief V7. DMT Enquiry agenda submitted. CF provision to be confirmed at DMT meeting.","notes":""},{"id":"R6","title":"Hidden utility easements","rating":"High","trend":"stable","owner":"Danube","date":"17 Mar","desc":"HV/ADNOC lines may cut saleable GFA below 600,000 sqm target.","mitigate":"Constraints mapping in Stage 0. Diversions excluded from scope.","notes":"26MW ADPG vs 90MW WSP estimate — formal challenge issued."},{"id":"R7","title":"Data dependency — X-Architects","rating":"Medium","trend":"improving","owner":"Danube","date":"27 Mar","desc":"Untimely CAD/GIS data from X-Architects for wider KEZAD Town Centre.","mitigate":"RFI.006 & RFI.018 issued. Option 3B rectangular plot reduces dependency.","notes":""},{"id":"R8","title":"Brief volatility","rating":"Medium","trend":"improving","owner":"WSP","date":"26 Mar","desc":"Frequent client changes to unit mix or GFA after Stage Gate 1a.","mitigate":"Design Freeze 1 enforced. Option 3B confirmed unanimously 11 Jun.","notes":""},{"id":"R9","title":"Adjacent interface coordination","rating":"Medium","trend":"stable","owner":"WSP","date":"11 Mar","desc":"KEZAD Town Centre interface changes could force boundary revisions.","mitigate":"Boundaries mapped early. Post-freeze changes via formal VO.","notes":""},{"id":"R10","title":"UK design consultant — regulatory non-compliance risk","rating":"Medium","trend":"stable","owner":"WSP","date":"11 Jun","desc":"Incoming UK studio may not comprehend Abu Dhabi DMT/ITC regulatory framework. Precedent: Eagle Hills/Perkins+BIG on Ramhan Island — severe rejections, lost villa yields, halted phases.","mitigate":"WSP to act as technical bridge. UK team limited to facade, styling, interiors. Not permitted to alter road networks, plot boundaries or engineering grids. Mandatory onboarding workshop on contract.","notes":"Raised MOM-PS-0010, 11 Jun. UK consultant not yet contracted."}]},
+  gates: {"milestones":[{"id":"M1","name":"Project Inception","target_date":"2026-03-10","status":"complete"},{"id":"M2","name":"Stage 1a — PCMP Submitted","target_date":"2026-04-10","status":"complete"},{"id":"M3","name":"Design Freeze 1 (Brief V7)","target_date":"2026-04-24","status":"complete"},{"id":"M4","name":"Option 3B Confirmed","target_date":"2026-05-14","status":"complete"},{"id":"M5","name":"Formal Contract Sign-off","target_date":"2026-06-11","status":"complete","notes":"Signed 11 Jun 2026. Copy not yet received by WSP."},{"id":"M5b","name":"Stage 1a Invoice Issued","target_date":"2026-06-13","status":"complete","notes":"AED 950,000. VAT cert received 12 Jun."},{"id":"M6b","name":"ADPG Alignment Meeting + Facilitation Letter","target_date":"2026-06-18","status":"at_risk","notes":"Critical path to DMT submission — must happen w/c 15 Jun"},{"id":"M7","name":"DMT Enquiry Meeting (Phase 1 — 10% land)","target_date":"2026-06-30","status":"upcoming","notes":"New Phase 1 strategy replacing previous blocked status"},{"id":"M8","name":"CMP Authority Submission","target_date":"2026-06-20","status":"at_risk","notes":"~Wk 11 — 1 week away. Transport modelling must be front-loaded."},{"id":"M9","name":"DMP Submission","target_date":"2026-09-12","status":"not_started","notes":"~Wk 24"},{"id":"M10","name":"DMP Authority Sign-off","target_date":"2026-10-31","status":"not_started"}],"invoicing_schedule":{"total_fee_aed":9500000,"stages":[{"stage":"1a","description":"PCMP / Site Analysis","fee_aed":950000,"status":"invoiced","invoice_issued":true},{"stage":"1b","description":"Concept Master Plan","fee_aed":1900000,"status":"in_progress","invoice_issued":false},{"stage":"2a","description":"DMP Part 1","fee_aed":2375000,"status":"not_started","invoice_issued":false},{"stage":"2b","description":"DMP Part 2","fee_aed":2375000,"status":"not_started","invoice_issued":false},{"stage":"3a","description":"Authority Support 1","fee_aed":950000,"status":"not_started","invoice_issued":false},{"stage":"3b","description":"Authority Support 2","fee_aed":950000,"status":"not_started","invoice_issued":false}]}},
+  mom: {"meta":{"last_updated":"2026-06-13","open_actions":8,"overdue_actions":1},"meetings":[{"id":"MOM-006","title":"Progress Update — Way Forward (MOM-PS-0010)","date":"2026-06-11","summary":"Stage 1B CMP workshop. Contract confirmed signed — work-at-risk phase closed. Option 3B unanimously confirmed. New DMT workaround strategy agreed (Phase 1 = 10% land via ADPG letter). UK design consultant governance framework set.","decisions":["Contract confirmed fully signed — work-at-risk phase formally CLOSED","Option 3B confirmed as technically superior and commercially preferred — 100% GFA utilisation","Option 4 (all-villa) rejected — 100,000 sqm GFA shortfall","Landscape Option 1 (water-centric) preferred for premium identity","DMT workaround: Phase 1 = 10% land package with access point — preceded by ADPG facilitation letter","WSP to act as technical bridge for UK design consultant — strict governance boundaries enforced","UK consultant limited to facade, styling, interiors only"],"actions":[{"desc":"Prepare Stage 1B CMP presentation files for issuance","owner":"WSP","due":"2026-06-16","status":"open"},{"desc":"Schedule ADPG alignment meeting — request official facilitation letter confirming Danube master developer agreement","owner":"WSP / Danube","due":"2026-06-18","status":"open"},{"desc":"Following ADPG sign-off: submit formal DMT/ITC Phase 1 technical inquiry","owner":"WSP","due":"2026-06-30","status":"open"},{"desc":"Obtain signed contract copy from Danube","owner":"Danube","due":"2026-06-14","status":"overdue"},{"desc":"Issue Stage 1a proforma invoice to Danube — AED 950,000","owner":"Harkeerat Singh","due":"2026-06-13","status":"complete"},{"desc":"Host UK design consultant onboarding workshop — align to Option 3B spatial and GFA matrices","owner":"WSP","due":"TBD","status":"open"}]}],"ewn_triggers":[{"trigger":"Signed contract copy not received — 2 days overdue","impact":"WSP cannot confirm contractual obligations. Commercial exposure continues.","action":"Chase Danube urgently. Escalate to Mr. Ghayyour if not received by 14 Jun.","severity":"critical"},{"trigger":"ADPG meeting not yet scheduled — CMP submission Wk-11 in 1 week","impact":"DMT Phase 1 submission cannot proceed without ADPG facilitation letter. CMP timeline at risk.","action":"Schedule ADPG meeting immediately — this is the new critical path.","severity":"critical"},{"trigger":"UK consultant regulatory risk","impact":"Risk of abortive design if UK firm does not comply with Abu Dhabi DMT/ITC regulations.","action":"Host mandatory onboarding workshop immediately on contract execution.","severity":"warning"}]}
+};
+
+// ── RENDER ALL ──────────────────────────────────────────────────────────────
+function renderAll() {
+  renderKPIs();
+  renderProgramme();
+  renderFinancial();
+  renderResources();
+  renderRisks('all');
+  renderMOM();
+}
+
+// ── KPIs ────────────────────────────────────────────────────────────────────
+function renderKPIs() {
+  const p = DATA.prog.meta, c = DATA.cost.summary, r = DATA.risks.meta;
+  document.getElementById('headerMeta').innerHTML =
+    `Wk ${p.current_week} / ${p.total_weeks} · Apr → Oct 2026<br>AE0069879.2288`;
+  const statusMap = {at_risk:'badge-amber',green:'badge-green',red:'badge-red',amber:'badge-amber'};
+  document.getElementById('statusBadge').className = 'badge ' + (statusMap[p.overall_status]||'badge-amber');
+  document.getElementById('statusBadge').textContent = '⬤ ' + (p.overall_status==='at_risk'?'Amber · At Risk':'Green');
+
+  document.getElementById('kpiRow').innerHTML = `
+    <div class="kpi"><div class="kpi-label">📅 Programme</div>
+      <div class="kpi-value">Wk <span style="font-size:18px;color:#768390">${p.current_week}</span>/${p.total_weeks}</div>
+      <div class="kpi-sub">Stage 1 — Concept Master Plan</div>
+      <div class="kpi-bar"><div class="kpi-bar-fill" style="width:${Math.round(p.current_week/p.total_weeks*100)}%;background:#e3b341"></div></div></div>
+    <div class="kpi"><div class="kpi-label">💰 Spend to date <span style="color:#f85149;font-size:10px">↑ ${c.spend_gap_pct}%</span></div>
+      <div class="kpi-value" style="font-size:22px">AED ${(c.actual_to_date_aed/1000000).toFixed(2)}M</div>
+      <div class="kpi-sub">${Math.round(c.actual_to_date_aed/c.planned_c2c_to_date_aed*100)}% of AED ${(c.planned_c2c_to_date_aed/1000000).toFixed(2)}M planned</div>
+      <div class="kpi-bar"><div class="kpi-bar-fill" style="width:${Math.round(c.actual_to_date_aed/c.planned_c2c_to_date_aed*100)}%;background:#f85149"></div></div></div>
+    <div class="kpi"><div class="kpi-label">⏱ Hours logged <span style="color:#f85149;font-size:10px">↓ ${DATA.cost.hours_variance_pct}%</span></div>
+      <div class="kpi-value">${DATA.cost.total_hours_logged.toLocaleString()}</div>
+      <div class="kpi-sub">${Math.round(DATA.cost.total_hours_logged/DATA.cost.planned_hours_to_date*100)}% of ${DATA.cost.planned_hours_to_date.toLocaleString()} planned</div>
+      <div class="kpi-bar"><div class="kpi-bar-fill" style="width:${Math.round(DATA.cost.total_hours_logged/DATA.cost.planned_hours_to_date*100)}%;background:#f85149"></div></div></div>
+    <div class="kpi"><div class="kpi-label">⚠️ Open Risks</div>
+      <div class="kpi-value" style="color:#f85149">${r.open}</div>
+      <div class="kpi-sub">${r.high} High · ${r.medium} Medium · All open</div>
+      <div class="kpi-bar"><div class="kpi-bar-fill" style="width:100%;background:#f85149"></div></div></div>`;
+}
+
+// ── PROGRAMME ───────────────────────────────────────────────────────────────
+function renderProgramme() {
+  const p = DATA.prog, ai = p.ai_schedule_analysis;
+  const statusColor = {complete:'#3fb950',in_progress:'#5b9bff',at_risk:'#e3b341',not_started:'#373e47'};
+  const statusClass = {complete:'complete',in_progress:'progress',at_risk:'atrisk',not_started:'notstarted'};
+
+  let gantt = '';
+  p.stages.forEach(s => {
+    gantt += `<div class="gantt-row"><div class="gantt-name section">● ${s.name}</div><div class="gantt-track"></div><div class="gantt-pct"></div></div>`;
+    s.tasks.forEach(t => {
+      const w = t.progress_pct; const offset = Math.round((t.planned_start_wk/29)*100);
+      const width = Math.max(2, Math.round(((t.planned_end_wk-t.planned_start_wk)/29)*100));
+      const cls = statusClass[t.status]||'notstarted';
+      gantt += `<div class="gantt-row">
+        <div class="gantt-name" title="${t.notes||''}">${t.name}</div>
+        <div class="gantt-track"><div class="gantt-bar ${cls}" style="width:${w>0?Math.max(3,Math.round(w/100*width))+'%':'2px'};margin-left:${offset}%">${w>5?w+'%':''}</div></div>
+        <div class="gantt-pct" style="color:${statusColor[t.status]||'#768390'}">${w}%</div>
+      </div>`;
+    });
+  });
+
+  let gates = '';
+  DATA.gates.milestones.forEach(m => {
+    const dotClass = m.status==='complete'?'complete':m.status==='at_risk'?'atrisk':m.status==='blocked'?'blocked':'upcoming';
+    const icon = m.status==='complete'?'✓':'';
+    gates += `<div class="gate-item">
+      <div class="gate-dot ${dotClass}">${icon}</div>
+      <div><div style="font-size:12px;font-weight:600;color:#cdd9e5">${m.name}</div>
+      <div style="font-size:11px;color:${m.status==='blocked'?'#f85149':m.status==='at_risk'?'#e3b341':'#768390'}">${m.target_date||'TBD'}${m.notes?' · '+m.notes:''}</div></div>
+    </div>`;
+  });
+
+  let inv = '';
+  const statusStyle = {approved:'badge-amber',in_progress:'background:rgba(91,155,255,.1);color:#5b9bff;border:1px solid rgba(91,155,255,.3)',not_started:''};
+  DATA.gates.invoicing_schedule.stages.forEach(s => {
+    inv += `<div class="inv-row">
+      <div style="font-weight:600;color:#5b9bff;width:60px">Stage ${s.stage}</div>
+      <div style="flex:1;color:#cdd9e5">${s.description}</div>
+      <div style="font-weight:600;color:#cdd9e5;width:100px;text-align:right">AED ${(s.fee_aed/1000).toFixed(0)}k</div>
+      <div style="width:110px;text-align:right">${s.status==='approved'?'<span class="badge badge-amber">Approved</span>':s.status==='in_progress'?'<span class="badge" style="background:rgba(91,155,255,.1);color:#5b9bff;border:1px solid rgba(91,155,255,.3)">In Progress</span>':'<span style="color:#768390;font-size:10px">Not started</span>'}</div>
+    </div>`;
+  });
+
+  document.getElementById('screen-programme').innerHTML = `
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">📅 Programme Schedule</div>
+        <div class="card-sub">29-week stage plan · CMP → DMP authority approval</div>
+        <div style="display:flex;align-items:center;gap:8px;padding:4px 0 8px;border-bottom:1px solid #373e47;font-size:10px;color:#768390">
+          <div style="width:200px;flex-shrink:0"></div>
+          <div style="flex:1;display:flex;justify-content:space-between"><span>W0</span><span>W5</span><span style="color:#f85149;font-weight:700">TODAY</span><span>W15</span><span>W20</span><span>W25</span><span>W29</span></div>
+          <div style="width:32px"></div>
+        </div>
+        ${gantt}
+      </div>
+      <div class="ai-panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div class="ai-tag">⚡ AI SCHEDULING</div>
+          <span class="badge badge-red">● High risk</span>
+        </div>
+        <div class="ai-headline">Progress stalled — ${ai.weeks_behind_plan} weeks behind plan.</div>
+        <div class="ai-body">${ai.top_recommendation}</div>
+        <div class="ai-stats">
+          <div class="ai-stat"><div class="ai-stat-val" style="color:#e3b341">Wk ${DATA.prog.meta.current_week}/${DATA.prog.meta.total_weeks}</div><div class="ai-stat-label">behind plan</div></div>
+          <div class="ai-stat"><div class="ai-stat-val" style="color:#f85149">${ai.hours_variance_pct}%</div><div class="ai-stat-label">hours vs plan</div></div>
+          <div class="ai-stat"><div class="ai-stat-val" style="color:#5b9bff">${ai.model_confidence_pct}%</div><div class="ai-stat-label">confidence</div></div>
+        </div>
+        <div style="background:#2d333b;border-radius:8px;padding:10px;margin-bottom:12px;font-size:11px;color:#768390">
+          <div style="font-weight:600;color:#cdd9e5;margin-bottom:6px">Top Recommendations</div>
+          <div style="margin-bottom:4px">1. 🚀 Front-load Transport Modelling to Wk 9</div>
+          <div style="margin-bottom:4px">2. 🔄 Activate Landscape Studio parallel to CMP</div>
+          <div>3. 📋 Submit DMT Enquiry agenda — Affection Plan critical path</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:12px">
+      <div class="card">
+        <div class="card-title">🏁 Stage Gates & Invoicing</div>
+        <div class="card-sub">Milestones, authority submissions, and payment schedule</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 24px">
+          <div><div class="section-header">Milestones</div>${gates}</div>
+          <div><div class="section-header">Invoicing — AED ${(DATA.gates.invoicing_schedule.total_fee_aed/1000000).toFixed(1)}M Total</div>${inv}</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── FINANCIAL ───────────────────────────────────────────────────────────────
+function renderFinancial() {
+  const c = DATA.cost;
+  let rows = '';
+  c.disciplines.forEach(d => {
+    const vc = d.var>0?'var-pos':d.var>-15?'var-warn':'var-neg';
+    rows += `<tr><td><span class="disc-dot" style="background:${d.color}"></span>${d.name}<span class="cat-badge">${d.cat}</span></td>
+      <td style="color:#768390">${d.aprC2c.toLocaleString()}</td><td style="color:#768390">${d.aprAct.toLocaleString()}</td>
+      <td style="color:#768390">${d.mayC2c.toLocaleString()}</td><td style="color:#768390">${d.mayAct.toLocaleString()}</td>
+      <td><strong>${d.toDate.toLocaleString()}</strong></td><td class="${vc}">${d.var>0?'+':''}${d.var}%</td></tr>`;
+  });
+
+  document.getElementById('screen-financial').innerHTML = `
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">📈 S-Curve — Planned vs Actual</div>
+        <div class="card-sub">Cumulative cost-to-complete vs actual delivery (AED)</div>
+        <div class="chart-wrap"><canvas id="scurveChart"></canvas></div>
+        <div style="display:flex;gap:24px;margin-top:12px;font-size:11px">
+          <div><div style="color:#768390">Planned (C2C)</div><div style="font-size:16px;font-weight:700">AED ${(c.summary.planned_c2c_to_date_aed/1000000).toFixed(2)}M</div></div>
+          <div><div style="color:#768390">Actual to date</div><div style="font-size:16px;font-weight:700;color:#5b9bff">AED ${(c.summary.actual_to_date_aed/1000).toFixed(0)}k</div></div>
+          <div><div style="color:#768390">May actual</div><div style="font-size:16px;font-weight:700">AED ${(c.summary.may_actual_aed/1000).toFixed(0)}k</div></div>
+          <div><div style="color:#768390">Spend gap</div><div style="font-size:16px;font-weight:700;color:#f85149">${c.summary.spend_gap_pct}%</div></div>
+        </div>
+      </div>
+      <div class="ai-panel">
+        <div class="ai-tag">💰 AI COST BURN</div>
+        <div class="ai-headline">Under-spend reflects halted progress, not efficiency.</div>
+        <div class="ai-body">Transport Planning holds ~AED 559k of unspent forecast. Once contract sign-off lands, expect sharp catch-up burn. Option 3B confirmed 14 May unlocks full production.</div>
+        <div class="ai-stats">
+          <div class="ai-stat"><div class="ai-stat-val" style="color:#5b9bff">AED ${(c.summary.actual_to_date_aed/1000).toFixed(0)}k</div><div class="ai-stat-label">actual to date</div></div>
+          <div class="ai-stat"><div class="ai-stat-val" style="color:#f85149">${c.summary.spend_gap_pct}%</div><div class="ai-stat-label">vs C2C plan</div></div>
+        </div>
+        <div style="background:#2d333b;border-radius:8px;padding:10px;font-size:11px;color:#768390">
+          <div style="font-weight:600;color:#cdd9e5;margin-bottom:4px">Weekly Hours Trend</div>
+          <div class="chart-wrap-sm"><canvas id="hoursChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:12px" class="card">
+      <div class="card-title">📊 Discipline Cost Performance</div>
+      <div class="card-sub">Inception-to-date forecast vs actuals (AED)</div>
+      <table class="disc-table">
+        <thead><tr><th>Discipline</th><th>Apr C2C</th><th>Apr Actual</th><th>May C2C</th><th>May Actual</th><th>To Date</th><th>Var</th></tr></thead>
+        <tbody>${rows}</tbody>
+        <tfoot><tr style="border-top:2px solid #373e47"><td><strong>Total</strong></td><td style="color:#768390">960,167</td><td style="color:#768390">321,718</td><td style="color:#768390">959,528</td><td style="color:#768390">266,285</td><td><strong style="color:#5b9bff">588,003</strong></td><td class="var-neg">−69%</td></tr></tfoot>
+      </table>
+    </div>`;
+
+  // Charts (after DOM update)
+  setTimeout(() => {
+    const wh = c.weekly_hours;
+    new Chart(document.getElementById('scurveChart'), {
+      type:'line',
+      data:{labels:['Apr','May','Jun','Jul','Aug','Sep','Oct'],datasets:[
+        {label:'Actual',data:[321718,588003,null,null,null,null,null],borderColor:'#5b9bff',backgroundColor:'rgba(91,155,255,.1)',fill:true,tension:.4,pointRadius:4,pointBackgroundColor:'#5b9bff'},
+        {label:'Planned (C2C)',data:[321718,960167,1400000,2200000,3200000,4500000,5800000],borderColor:'#768390',borderDash:[6,4],fill:false,tension:.4,pointRadius:3,pointBackgroundColor:'#768390'}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#768390',font:{size:10}}}},scales:{x:{ticks:{color:'#768390',font:{size:10}},grid:{color:'#373e47'}},y:{ticks:{color:'#768390',font:{size:10},callback:v=>v>=1e6?(v/1e6).toFixed(1)+'M':v>=1000?(v/1000).toFixed(0)+'k':v},grid:{color:'#373e47'}}}}
+    });
+    new Chart(document.getElementById('hoursChart'), {
+      type:'bar',
+      data:{labels:wh.map(w=>w.week_ending.slice(5)),datasets:[{data:wh.map(w=>w.hours),backgroundColor:wh.map(w=>w.hours===435?'#e3b341':'#5b9bff'),borderRadius:3}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#768390',font:{size:9}},grid:{display:false}},y:{ticks:{color:'#768390',font:{size:9}},grid:{color:'#373e47'}}}}
+    });
+  }, 50);
+}
+
+// ── RESOURCES ───────────────────────────────────────────────────────────────
+function renderResources() {
+  const r = DATA.res;
+  const maxH = Math.max(...r.team.map(m=>m.hours));
+  let teamHTML = r.team.map(m => `
+    <div class="team-row">
+      <div class="team-avatar" style="background:${m.color}20;color:${m.color}">${m.ini}</div>
+      <div style="flex:1"><div style="font-size:12px;color:#cdd9e5">${m.name}${!m.fore?'<span style="font-size:9px;background:rgba(227,179,65,.15);color:#e3b341;border-radius:4px;padding:1px 5px;margin-left:4px">Unfore.</span>':''}</div><div style="font-size:10px;color:#768390">${m.role}</div></div>
+      <div style="padding:0 8px"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:${Math.round(m.hours/maxH*100)}%;background:${m.color}"></div></div></div>
+      <div style="font-size:13px;font-weight:600;color:#cdd9e5">${m.hours}</div>
+    </div>`).join('');
+
+  let obsHTML = (r.key_observations||[]).map(o =>
+    `<div class="obs-item"><div style="flex-shrink:0;margin-top:1px">⚡</div><div style="font-size:11px;color:#768390;line-height:1.5">${o}</div></div>`).join('');
+
+  let gatesHTML = DATA.gates.milestones.slice(0,8).map(m => {
+    const dc = m.status==='complete'?'complete':m.status==='at_risk'?'atrisk':m.status==='blocked'?'blocked':'upcoming';
+    return `<div class="gate-item"><div class="gate-dot ${dc}">${m.status==='complete'?'✓':''}</div>
+      <div><div style="font-size:12px;font-weight:600;color:#cdd9e5">${m.name}</div>
+      <div style="font-size:11px;color:${m.status==='blocked'?'#f85149':m.status==='at_risk'?'#e3b341':'#768390'}">${m.target_date||'TBD'}${m.notes?' · '+m.notes:''}</div></div></div>`;
+  }).join('');
+
+  document.getElementById('screen-resources').innerHTML = `
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-title">👥 Resource Hours — ITD</div>
+        <div class="card-sub">>80% utilised · avg ${r.meta.avg_hours_per_week} h/wk · Total: ${r.meta.total_hours_logged.toLocaleString()}h</div>
+        ${teamHTML}
+        <div style="margin-top:12px;padding:10px;background:#1c2128;border-radius:8px">
+          <div style="font-size:11px;font-weight:600;color:#e3b341;margin-bottom:6px">⚠ Unforecasted: ${r.meta.unforecasted_total_hours}h</div>
+          <div style="font-size:11px;color:#768390">Hafsah Alderei: 90h · Odai Abur-Rubb: 44h · John Carlo Rebadavia: 41h</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">💬 Key Observations</div>
+        <div class="card-sub">AI-generated from PROJEX + MOM · Month 02</div>
+        ${obsHTML}
+      </div>
+      <div class="card">
+        <div class="card-title">🏁 Stage Gates</div>
+        <div class="card-sub">Key submissions & authority milestones</div>
+        ${gatesHTML}
+      </div>
+    </div>`;
+}
+
+// ── RISKS ────────────────────────────────────────────────────────────────────
+let riskFilter = 'all';
+function renderRisks(filter) {
+  riskFilter = filter;
+  const trendIcon = {improving:'↓',worsening:'↑',stable:'→'};
+  const trendColor = {improving:'#3fb950',worsening:'#f85149',stable:'#768390'};
+  const all = DATA.risks.risks;
+  const filtered = filter==='all' ? all : all.filter(r=>r.rating===filter);
+
+  let html = `<div style="margin-bottom:12px">
+    <button class="filter-btn ${filter==='all'?'active':''}" onclick="renderRisks('all')">All (${all.length})</button>
+    <button class="filter-btn ${filter==='High'?'active':''}" onclick="renderRisks('High')">🔴 High (${all.filter(r=>r.rating==='High').length})</button>
+    <button class="filter-btn ${filter==='Medium'?'active':''}" onclick="renderRisks('Medium')">🟡 Medium (${all.filter(r=>r.rating==='Medium').length})</button>
+  </div>`;
+
+  filtered.forEach(r => {
+    html += `<div class="risk-card ${r.rating.toLowerCase()}">
+      <div class="risk-header">
+        <span style="font-size:10px;color:#768390;font-weight:600">${r.id}</span>
+        <span style="font-size:13px;font-weight:600;color:#cdd9e5;flex:1">${r.title}</span>
+        <span style="color:${trendColor[r.trend]};font-size:14px;margin-right:4px" title="Trend: ${r.trend}">${trendIcon[r.trend]}</span>
+        <span class="risk-badge ${r.rating.toLowerCase()}">${r.rating}</span>
+      </div>
+      <div style="font-size:11px;color:#768390;line-height:1.5;margin-bottom:6px">${r.desc}</div>
+      <div style="font-size:11px;color:#5b9bff;line-height:1.5;margin-bottom:6px">↳ ${r.mitigate}</div>
+      ${r.notes?`<div style="font-size:10px;color:#e3b341;margin-bottom:6px">📌 ${r.notes}</div>`:''}
+      <div style="display:flex;gap:12px;font-size:10px;color:#768390">
+        <span>Owner: <strong>${r.owner}</strong></span><span>Raised: ${r.date}</span><span style="color:#e3b341">● Open</span>
+      </div>
+    </div>`;
+  });
+  document.getElementById('screen-risks').innerHTML = html;
+}
+
+// ── MOM FEED ─────────────────────────────────────────────────────────────────
+function renderMOM() {
+  const m = DATA.mom;
+  const sevColor = {critical:'rgba(248,81,73,.3)',warning:'rgba(227,179,65,.3)'};
+  const sevBg = {critical:'rgba(248,81,73,.1)',warning:'rgba(227,179,65,.08)'};
+  const sevTextColor = {critical:'#f85149',warning:'#e3b341'};
+
+  let ewnHTML = (m.ewn_triggers||[]).map(e => `
+    <div class="ewn-banner" style="background:${sevBg[e.severity]||sevBg.critical};border-color:${sevColor[e.severity]||sevColor.critical}">
+      <div style="font-size:18px">${e.severity==='critical'?'🚨':'⚠️'}</div>
+      <div style="flex:1">
+        <div style="font-size:12px;font-weight:700;color:${sevTextColor[e.severity]||'#f85149'};margin-bottom:2px">EWN Trigger: ${e.trigger}</div>
+        <div style="font-size:11px;color:#768390">${e.impact} ${e.action}</div>
+      </div>
+      <button class="ewn-btn" style="border-color:${sevColor[e.severity]||sevColor.critical};color:${sevTextColor[e.severity]||'#f85149'};background:${sevBg[e.severity]||sevBg.critical}" onclick="alert('Draft EWN for: ${e.trigger}\\n\\nPaste into Claude and say: Draft formal EWN to Danube for this issue.')">Draft EWN →</button>
+    </div>`).join('');
+
+  const lastMtg = m.meetings[0];
+  let decisionsHTML = (lastMtg.decisions||[]).map(d=>`<div style="font-size:11px;color:#768390;line-height:2">✅ ${d}</div>`).join('');
+
+  let actionsHTML = (lastMtg.actions||[]).map(a => `
+    <div class="mom-action">
+      <div class="mom-status-dot ${a.status}"></div>
+      <div style="flex:1"><div style="font-size:11px;color:#cdd9e5">${a.desc}</div><div style="font-size:10px;color:#768390">${a.owner}</div></div>
+      <div style="font-size:10px;font-weight:600;color:${a.status==='overdue'?'#f85149':'#e3b341'}">Due ${a.due}${a.status==='overdue'?' ⚠':''}</div>
+    </div>`).join('');
+
+  let mtgHistory = m.meetings.map(mtg => `
+    <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #373e47;font-size:11px">
+      <span style="color:#cdd9e5">${mtg.title}</span><span style="color:#768390">${mtg.date}</span>
+    </div>`).join('');
+
+  document.getElementById('screen-mom').innerHTML = `
+    ${ewnHTML}
+    <div class="grid-2" style="margin-top:4px">
+      <div class="card">
+        <div class="card-title">💬 Last MOM — ${lastMtg.title}</div>
+        <div class="card-sub">${lastMtg.date}</div>
+        <div style="font-size:11px;color:#768390;margin-bottom:8px">${lastMtg.summary}</div>
+        <div class="section-header">Decisions</div>
+        ${decisionsHTML}
+        <div class="section-header">Open Actions</div>
+        ${actionsHTML}
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:12px">
+          <div class="card-title">📋 Meeting History</div>
+          <div class="card-sub">${m.meetings.length} meetings logged</div>
+          ${mtgHistory}
+        </div>
+        <div class="ai-panel">
+          <div class="ai-tag">💬 AI MOM FEED</div>
+          <div class="ai-headline" style="font-size:13px">${(m.ewn_triggers||[]).length} EWN triggers detected.</div>
+          <div class="ai-body">Open actions: ${m.meta.open_actions} · Overdue: ${m.meta.overdue_actions}. Send new MOM notes to your Telegram bot and the dashboard will update automatically.</div>
+          <div class="btn-row" style="margin-top:8px">
+            <button class="btn btn-primary" onclick="alert('Send your MOM notes to the Danube PM Bot on Telegram.\\nOr paste notes into Claude and say: Update the dashboard from this MOM')">📋 Add new MOM</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── NAVIGATION ───────────────────────────────────────────────────────────────
+function setTab(name) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-icon').forEach(n=>n.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  const order = ['programme','financial','resources','risks','mom'];
+  const idx = order.indexOf(name);
+  if(idx>=0) {
+    document.querySelectorAll('.tab')[idx]?.classList.add('active');
+    document.querySelectorAll('.nav-icon')[idx+1]?.classList.add('active');
+  }
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+loadAllData();
+// Auto-refresh every 5 minutes when hosted
+setInterval(loadAllData, 5 * 60 * 1000);
+</script>
+</body>
+</html>

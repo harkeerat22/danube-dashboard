@@ -1,0 +1,120 @@
+{
+  "meta": {
+    "last_updated": "2026-06-13",
+    "project_ref": "AE0069879.2288"
+  },
+  "invoicing_schedule": {
+    "total_fee_aed": 9500000,
+    "stages": [
+      { "stage": "1a", "description": "PCMP / Site Analysis", "fee_aed": 950000, "pct": 10, "status": "invoiced", "invoice_issued": true, "invoice_date": "2026-06-13", "notes": "VAT cert received 12 Jun. Proforma invoice issued by WSP Finance to Danube on 13 Jun 2026." },
+      { "stage": "1b", "description": "CMP", "fee_aed": 1900000, "pct": 20, "status": "in_progress", "invoice_issued": false, "notes": "Full production authorised 14 May post Option 3B selection." },
+      { "stage": "2a", "description": "DMP Part 1", "fee_aed": 2375000, "pct": 25, "status": "not_started", "invoice_issued": false },
+      { "stage": "2b", "description": "DMP Part 2", "fee_aed": 2375000, "pct": 25, "status": "not_started", "invoice_issued": false },
+      { "stage": "3a", "description": "Authority Support Part 1", "fee_aed": 950000, "pct": 10, "status": "not_started", "invoice_issued": false },
+      { "stage": "3b", "description": "Authority Support Part 2", "fee_aed": 950000, "pct": 10, "status": "not_started", "invoice_issued": false }
+    ]
+  },
+  "milestones": [
+    {
+      "id": "M1",
+      "name": "Project Inception / KO",
+      "target_date": "2026-03-10",
+      "actual_date": "2026-03-10",
+      "status": "complete",
+      "week": 0
+    },
+    {
+      "id": "M2",
+      "name": "Options Workshop",
+      "target_date": "2026-03-18",
+      "actual_date": "2026-03-18",
+      "status": "complete",
+      "week": 2
+    },
+    {
+      "id": "M3",
+      "name": "Stage 1a Submission (PCMP + Site Analysis)",
+      "target_date": "2026-04-10",
+      "actual_date": "2026-04-10",
+      "status": "complete",
+      "week": 5
+    },
+    {
+      "id": "M4",
+      "name": "Design Freeze 1 (Return Brief V7)",
+      "target_date": "2026-04-24",
+      "actual_date": "2026-04-24",
+      "status": "complete",
+      "week": 7
+    },
+    {
+      "id": "M5",
+      "name": "Formal Contract Sign-off",
+      "target_date": "2026-05-18",
+      "actual_date": "2026-06-11",
+      "status": "complete",
+      "week": 10,
+      "notes": "Contract confirmed as fully signed at MOM-PS-0010 (11 Jun 2026) by Mr. Ghayyour — work-at-risk phase formally CLOSED. Signed copy not yet received by WSP as of 13 Jun 2026."
+    },
+    {
+      "id": "M6",
+      "name": "Option 3B Confirmed (Full GFA / Hybrid Density)",
+      "target_date": "2026-05-14",
+      "actual_date": "2026-05-14",
+      "status": "complete",
+      "week": 7,
+      "notes": "Villas/townhouses for core, G+5 gateway apartments to close GFA gap. Rectangular plot confirmed."
+    },
+    {
+      "id": "M6b",
+      "name": "ADPG Alignment Meeting + Facilitation Letter",
+      "target_date": "2026-06-18",
+      "actual_date": null,
+      "status": "at_risk",
+      "week": 11,
+      "notes": "NEW — agreed at MOM-PS-0010. ADPG to confirm Danube master developer agreement via official letter. Critical path item enabling DMT Phase 1 submission."
+    },
+    {
+      "id": "M7",
+      "name": "DMT Enquiry Meeting (Phase 1 — 10% land)",
+      "target_date": "2026-06-30",
+      "actual_date": null,
+      "status": "upcoming",
+      "week": 12,
+      "notes": "New strategy: submit Phase 1 as 10% land package (with access point). Preceded by ADPG facilitation letter. Replaces previous 'blocked' status."
+    },
+    {
+      "id": "M8",
+      "name": "CMP Authority Submission (DMT/ITC)",
+      "target_date": "2026-06-20",
+      "actual_date": null,
+      "status": "at_risk",
+      "week": 11,
+      "notes": "Target ~Wk 11. At risk if Transport Modelling not front-loaded in June. ITC min 6-month review cycle."
+    },
+    {
+      "id": "M9",
+      "name": "Design Freeze 2 (CMP)",
+      "target_date": "2026-06-20",
+      "actual_date": null,
+      "status": "not_started",
+      "week": 11
+    },
+    {
+      "id": "M10",
+      "name": "DMP Submission",
+      "target_date": "2026-09-12",
+      "actual_date": null,
+      "status": "not_started",
+      "week": 24
+    },
+    {
+      "id": "M11",
+      "name": "DMP Authority Sign-off / Project Completion",
+      "target_date": "2026-10-31",
+      "actual_date": null,
+      "status": "not_started",
+      "week": 29
+    }
+  ]
+}

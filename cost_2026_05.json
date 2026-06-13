@@ -1,0 +1,143 @@
+{
+  "meta": {
+    "month": "2026-05",
+    "last_updated": "2026-06-13",
+    "total_fee_aed": 9500000,
+    "stage_1a_fee": 950000,
+    "stage_1a_status": "approved_for_release",
+    "stage_1a_invoice_issued": false,
+    "vat_certificate_received": false
+  },
+  "summary": {
+    "planned_c2c_to_date_aed": 1919695,
+    "actual_to_date_aed": 588003,
+    "spend_gap_pct": -69,
+    "spend_interpretation": "Under-spend reflects halted progress, not efficiency. Sharp catch-up burn expected post contract sign-off.",
+    "may_actual_aed": 266285,
+    "apr_actual_aed": 321718
+  },
+  "weekly_hours": [
+    { "week_ending": "2026-04-03", "hours": 4 },
+    { "week_ending": "2026-04-10", "hours": 396 },
+    { "week_ending": "2026-04-17", "hours": 365 },
+    { "week_ending": "2026-04-24", "hours": 378 },
+    { "week_ending": "2026-05-01", "hours": 435 },
+    { "week_ending": "2026-05-08", "hours": 279 },
+    { "week_ending": "2026-05-15", "hours": 214 },
+    { "week_ending": "2026-05-22", "hours": 108 },
+    { "week_ending": "2026-05-29", "hours": 20 }
+  ],
+  "total_hours_logged": 2198,
+  "planned_hours_to_date": 8809,
+  "hours_variance_pct": -75,
+  "disciplines": [
+    {
+      "name": "Transport Planning",
+      "category": "T&I",
+      "apr_c2c": 327118, "apr_actual": 48037,
+      "may_c2c": 309806, "may_actual": 29677,
+      "to_date_actual": 77715,
+      "variance_pct": -39,
+      "notes": "Largest variance. Majority of planned hours undelivered. Critical to front-load in June."
+    },
+    {
+      "name": "DPUD",
+      "category": "AS",
+      "apr_c2c": 221514, "apr_actual": 139728,
+      "may_c2c": 212407, "may_actual": 131085,
+      "to_date_actual": 270813,
+      "variance_pct": 11,
+      "notes": "Only discipline tracking above plan. Urban design work progressing well."
+    },
+    {
+      "name": "Landscape",
+      "category": "P&B",
+      "apr_c2c": 109991, "apr_actual": 38567,
+      "may_c2c": 99681, "may_actual": 53096,
+      "to_date_actual": 91663,
+      "variance_pct": -9,
+      "notes": "Landscape Studio coordination to commence week of 17 May."
+    },
+    {
+      "name": "Dry Utilities",
+      "category": "T&I",
+      "apr_c2c": 68824, "apr_actual": 22733,
+      "may_c2c": 75942, "may_actual": 15347,
+      "to_date_actual": 38079,
+      "variance_pct": -21,
+      "notes": "Utility capacity gap unresolved: 26MW ADPG allocation vs 90MW WSP estimate."
+    },
+    {
+      "name": "Roads",
+      "category": "T&I",
+      "apr_c2c": 40059, "apr_actual": 1197,
+      "may_c2c": 35424, "may_actual": 788,
+      "to_date_actual": 1985,
+      "variance_pct": -50,
+      "notes": "Roads essentially not started. Blocked pending Option 3B geometry confirmation (now confirmed)."
+    },
+    {
+      "name": "Compliance",
+      "category": "T&I",
+      "apr_c2c": 36219, "apr_actual": 4878,
+      "may_c2c": 32926, "may_actual": 6402,
+      "to_date_actual": 11281,
+      "variance_pct": -36,
+      "notes": null
+    },
+    {
+      "name": "Sustainability",
+      "category": "AS",
+      "apr_c2c": 32461, "apr_actual": 20056,
+      "may_c2c": 30724, "may_actual": 9657,
+      "to_date_actual": 29713,
+      "variance_pct": -4,
+      "notes": "Estidama/PCRS (minimum 1 Pearl) tracking close to plan."
+    },
+    {
+      "name": "Wet Utilities",
+      "category": "T&I",
+      "apr_c2c": 27557, "apr_actual": 15256,
+      "may_c2c": 33370, "may_actual": 7037,
+      "to_date_actual": 22294,
+      "variance_pct": -9,
+      "notes": null
+    },
+    {
+      "name": "Environment",
+      "category": "AS",
+      "apr_c2c": 12315, "apr_actual": 0,
+      "may_c2c": 46119, "may_actual": 0,
+      "to_date_actual": 0,
+      "variance_pct": -21,
+      "notes": "EIA WIP report from client still outstanding (RFI.019)."
+    },
+    {
+      "name": "FLS",
+      "category": "P&B",
+      "apr_c2c": 27330, "apr_actual": 1935,
+      "may_c2c": 30732, "may_actual": 1161,
+      "to_date_actual": 3097,
+      "variance_pct": -42,
+      "notes": null
+    },
+    {
+      "name": "SRM",
+      "category": "P&B",
+      "apr_c2c": 28245, "apr_actual": 11428,
+      "may_c2c": 29251, "may_actual": 5806,
+      "to_date_actual": 17233,
+      "variance_pct": -19,
+      "notes": null
+    },
+    {
+      "name": "Dry Utilities (Gas)",
+      "category": "T&I",
+      "apr_c2c": 28534, "apr_actual": 17903,
+      "may_c2c": 23146, "may_actual": 6227,
+      "to_date_actual": 24129,
+      "variance_pct": -9,
+      "notes": null
+    }
+  ]
+}

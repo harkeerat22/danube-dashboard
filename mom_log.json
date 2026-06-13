@@ -1,0 +1,174 @@
+{
+  "meta": {
+    "last_updated": "2026-06-13",
+    "total_meetings": 6,
+    "open_actions": 8,
+    "overdue_actions": 1
+  },
+  "meetings": [
+    {
+      "id": "MOM-006",
+      "ref": "MOM-PS-0010",
+      "doc_ref": "260611-2026AE572288-PS-Danube MPD-Way forward-MOM-0010",
+      "title": "Progress Update — Way Forward",
+      "date": "2026-06-11",
+      "time": "17:30",
+      "venue": "Danube Properties Headquarters",
+      "chair": "Harkeerat Singh",
+      "prepared_by": "Pratiksha Singh",
+      "attendees": [
+        {"name": "Riyaz Mohamed", "initials": "RM", "org": "Danube Properties"},
+        {"name": "Ghayyour Ahmad", "initials": "GA", "org": "Danube Properties"},
+        {"name": "Shatha Mousa Jaddo Karajeh", "initials": "SM", "org": "Danube Properties"},
+        {"name": "Harkeerat Singh", "initials": "HS", "org": "WSP"},
+        {"name": "Rohit Sewani", "initials": "RS", "org": "WSP"}
+      ],
+      "summary": "Stage 1B CMP workshop aligning multi-disciplinary team on presentation, DMT strategy, and UK design consultant governance. Contract formally confirmed as signed, closing the work-at-risk phase. Option 3B confirmed as the technically superior and commercially preferred scheme. New DMT workaround strategy agreed: phase 1 submission based on 10% land pocket, preceded by ADPG facilitation letter.",
+      "decisions": [
+        "Contract confirmed as fully signed — work-at-risk phase formally closed",
+        "Option 3B confirmed as technically superior and commercially preferred — 100% GFA utilisation",
+        "Option 4 (all-villa) rejected — creates 100,000 sqm GFA shortfall",
+        "Landscape Option 1 (water-centric active landscape) preferred for premium identity; to be refined",
+        "DMT workaround strategy: submit Phase 1 as 10% land package capturing at least one major access point",
+        "ADPG alignment meeting to be scheduled in coming week — WSP to request facilitation letter",
+        "WSP to act as technical bridge for incoming UK design consultant — strict governance boundaries on road networks, plot boundaries, and engineering grids",
+        "UK consultant allowed to innovate on facade, styling, interiors only — not spatial/GFA matrix",
+        "WSP to host UK consultant onboarding workshop once contracted"
+      ],
+      "actions": [
+        {"desc": "Prepare Stage 1B CMP presentation files for issuance", "owner": "WSP", "due": "2026-06-16", "status": "open", "priority": "high"},
+        {"desc": "Schedule ADPG alignment meeting and request official facilitation letter confirming Danube master developer agreement", "owner": "WSP / Danube", "due": "2026-06-18", "status": "open", "priority": "critical"},
+        {"desc": "Following ADPG sign-off, submit formal DMT/ITC presentation and technical inquiry (Phase 1 — 10% land pocket)", "owner": "WSP", "due": "2026-06-30", "status": "open", "priority": "critical"},
+        {"desc": "Host UK design consultant onboarding workshop — align to Option 3B spatial and GFA matrices", "owner": "WSP", "due": "TBD", "status": "open", "priority": "medium"},
+        {"desc": "Obtain signed contract copy from Danube (confirmed signed 11 Jun but copy not yet received by WSP)", "owner": "Danube", "due": "2026-06-14", "status": "open", "priority": "critical", "notes": "Contract announced as signed at meeting 11 Jun 2026. Physical signed copy not yet received by WSP as of 13 Jun 2026."},
+        {"desc": "Issue Stage 1a proforma invoice to Danube — AED 950,000", "owner": "Harkeerat Singh", "due": "2026-06-13", "status": "complete", "notes": "VAT registration received 12 Jun 2026. Proforma invoice created by WSP Finance and issued 13 Jun 2026."}
+      ],
+      "additional_updates": {
+        "vat_registration": "Received from Danube on 12 June 2026. Unblocks Stage 1a invoice.",
+        "invoice_status": "WSP Finance created proforma invoice 13 Jun 2026. Issued to Danube same day. Amount: AED 950,000 (Stage 1a — 10% of total fee).",
+        "contract_status": "Formally announced as signed at meeting 11 Jun 2026 (confirmed by Mr. Ghayyour). Signed physical/digital copy not yet received by WSP as of 13 Jun 2026. Follow-up required urgently."
+      }
+    },
+    {
+      "id": "MOM-001",
+      "title": "Internal Project Kick-off",
+      "date": "2026-03-05",
+      "attendees": ["Harkeerat Singh", "Rohit Sewani", "Pratiksha Singh"],
+      "summary": "Internal team briefing on project scope, programme, and resource plan for 128-day fast-track delivery.",
+      "decisions": [
+        "128-day programme adopted as baseline",
+        "Work-at-risk to commence immediately under LOI",
+        "WSP 35 work order codes established for budget tracking"
+      ],
+      "actions": [
+        { "id": "A001-01", "description": "Set up SharePoint folder structure", "owner": "Pratiksha Singh", "due": "2026-03-10", "status": "complete" },
+        { "id": "A001-02", "description": "Issue RFIs for missing baseline data", "owner": "Harkeerat Singh", "due": "2026-03-17", "status": "complete" }
+      ]
+    },
+    {
+      "id": "MOM-002",
+      "title": "Client Kick-off Meeting",
+      "date": "2026-03-10",
+      "attendees": ["Harkeerat Singh", "Rohit Sewani", "Riyaz Mohamed", "Moosin Kamil"],
+      "location": "Danube Properties HQ, Dubai",
+      "summary": "Formal project initiation with Danube. Scope, programme, and communication protocols agreed.",
+      "decisions": [
+        "GFA target confirmed: 600,000 sqm",
+        "Phasing confirmed: 35/25/20/20% GFA split across 4 phases",
+        "Single point of contact: Moosin Kamil (Danube PM)",
+        "Weekly coordination calls agreed: Thursdays 10:00"
+      ],
+      "actions": [
+        { "id": "A002-01", "description": "Issue Return Brief V1 for client review", "owner": "WSP", "due": "2026-03-17", "status": "complete" },
+        { "id": "A002-02", "description": "Provide Affection Plan for Plot MP1", "owner": "Danube", "due": "2026-03-24", "status": "overdue", "notes": "Still outstanding. Critical path item. RFI.013 issued." },
+        { "id": "A002-03", "description": "Provide existing topo survey and utility as-builts", "owner": "Danube", "due": "2026-03-24", "status": "partial", "notes": "Partial data received. New topo survey for rectangular plot requested (RFI.018)." }
+      ]
+    },
+    {
+      "id": "MOM-003",
+      "title": "Options Workshop — Option 3B Selection",
+      "date": "2026-03-18",
+      "attendees": ["Harkeerat Singh", "Rohit Sewani", "Pratiksha Singh", "Riyaz Mohamed", "Moosin Kamil"],
+      "summary": "Three masterplan options presented. Client selected direction toward full GFA utilisation with hybrid density.",
+      "decisions": [
+        "Option 3B direction selected: full 600,000 sqm GFA utilisation",
+        "Hybrid density model: villas/townhouses for core residential, G+5 gateway apartments at periphery",
+        "Rectangular plot geometry preferred (avoids curved road interface with X-Architects)"
+      ],
+      "actions": [
+        { "id": "A003-01", "description": "Develop Option 3B in detail for Stage 1a PCMP", "owner": "WSP", "due": "2026-04-10", "status": "complete" },
+        { "id": "A003-02", "description": "Issue Return Brief V7 for client sign-off", "owner": "WSP", "due": "2026-04-17", "status": "complete" }
+      ]
+    },
+    {
+      "id": "MOM-004",
+      "title": "Roadway Design Workshop",
+      "date": "2026-04-09",
+      "attendees": ["Harkeerat Singh", "Rohit Sewani", "Transport Planning Team", "Moosin Kamil"],
+      "summary": "Road hierarchy, geometry, and interface with KEZAD spine road reviewed. Option 3B rectangular plot geometry confirmed as preferred.",
+      "decisions": [
+        "Internal road hierarchy agreed: primary collector + residential distributor + access lanes",
+        "Rectangular plot boundary confirmed as per Option 3B",
+        "USDM road cross-sections to be used as minimum standard",
+        "Pedestrian spine to be incorporated in CMP"
+      ],
+      "actions": [
+        { "id": "A004-01", "description": "Transfer Option 3B geometry to all discipline teams", "owner": "Harkeerat Singh", "due": "2026-05-18", "status": "open" },
+        { "id": "A004-02", "description": "Obtain X-Architects CAD data for surrounding road tie-ins", "owner": "Danube / ADPG", "due": "2026-04-30", "status": "overdue", "notes": "RFI.006 and RFI.018 issued. Still awaited." }
+      ]
+    },
+    {
+      "id": "MOM-005",
+      "title": "Executive In-Person Meeting — Danube Leadership",
+      "date": "2026-05-14",
+      "attendees": ["Harkeerat Singh", "Rohit Sewani", "Mr. Ghayyour (Danube CEO/MD)", "Riyaz Mohamed", "Moosin Kamil"],
+      "location": "Danube Properties HQ — In Person",
+      "summary": "Critical breakthrough meeting. Resolved contract delay, payment blockage, Option 3B confirmation, and land acquisition update. Project upgraded from Red to Amber.",
+      "decisions": [
+        "Option 3B (full GFA / hybrid density / rectangular plot) formally confirmed as project baseline",
+        "Mr. Ghayyour authorised Stage 1a payment release (AED 950,000 — 10% of total fee)",
+        "Contract execution authorised and targeted for 18 May 2026",
+        "Work deceleration order lifted — full Stage 1b CMP production to resume immediately",
+        "Danube has acquired ~10% of Plot MP1 from ADPG — remaining 90% acquisition in pipeline",
+        "Landscape Studio coordination to activate week of 17 May",
+        "WSP to submit formal DMT Enquiry Meeting agenda covering total land acquisition and CF quotas"
+      ],
+      "actions": [
+        { "id": "A005-01", "description": "Issue formal contract for Danube counter-signature", "owner": "WSP Commercial", "due": "2026-05-18", "status": "open", "priority": "critical" },
+        { "id": "A005-02", "description": "Obtain VAT certificate from Danube to enable Stage 1a invoice", "owner": "Danube Finance", "due": "2026-05-18", "status": "overdue", "priority": "critical", "notes": "AED 950,000 invoice ready but cannot be issued without Danube VAT cert." },
+        { "id": "A005-03", "description": "Confirm acceptance of contract clause: Exclusion of consequential losses", "owner": "Danube Legal", "due": "2026-05-18", "status": "overdue", "notes": "Client appears to have missed these key revisions in their comments." },
+        { "id": "A005-04", "description": "Confirm acceptance of contract clause: WSP right to suspend/terminate on payment delay", "owner": "Danube Legal", "due": "2026-05-18", "status": "overdue", "notes": "Client appears to have missed these key revisions in their comments." },
+        { "id": "A005-05", "description": "Re-baseline master programme around Option 3B rectangular plot geometry", "owner": "Harkeerat Singh", "due": "2026-05-21", "status": "open" },
+        { "id": "A005-06", "description": "Internal alignment call — transfer Option 3B to Infrastructure, Transport, Utilities teams", "owner": "Harkeerat Singh", "due": "2026-05-18", "status": "open" },
+        { "id": "A005-07", "description": "Activate Landscape Studio coordination", "owner": "Harkeerat Singh", "due": "2026-05-21", "status": "open" },
+        { "id": "A005-08", "description": "Submit DMT Enquiry Meeting agenda (land acquisition + CF quotas)", "owner": "Harkeerat Singh", "due": "2026-05-28", "status": "open" },
+        { "id": "A005-09", "description": "Progress Affection Plan — follow up with Danube and DMT on Super-plot acceptability", "owner": "Danube / Harkeerat Singh", "due": "2026-05-28", "status": "open", "priority": "critical" }
+      ]
+    }
+  ],
+  "ewn_triggers_detected": [
+    {
+      "trigger": "Signed contract copy not received — 2 days",
+      "meeting": "MOM-006",
+      "days_overdue": 2,
+      "impact": "WSP cannot confirm contractual obligations without signed copy. Commercial exposure continues.",
+      "recommended_action": "Chase Danube urgently for signed contract copy. Escalate to Mr. Ghayyour if not received by 14 Jun.",
+      "severity": "critical"
+    },
+    {
+      "trigger": "Affection Plan — 79 days open",
+      "meeting": "MOM-002",
+      "days_open": 79,
+      "impact": "DMT case cannot be opened without affection plan or ADPG facilitation letter. CMP submission at risk.",
+      "recommended_action": "Execute new DMT workaround strategy — ADPG meeting this week is critical path.",
+      "severity": "critical"
+    },
+    {
+      "trigger": "UK Consultant governance risk",
+      "meeting": "MOM-006",
+      "impact": "International consultants historically fail to comply with Abu Dhabi DMT/ITC regulations (ref: Eagle Hills / Perkins/BIG). Risk of abortive design work.",
+      "recommended_action": "Host UK onboarding workshop immediately on contract. Enforce Option 3B spatial freeze.",
+      "severity": "warning"
+    }
+  ]
+}

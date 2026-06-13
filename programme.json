@@ -1,0 +1,130 @@
+{
+  "meta": {
+    "project": "Danube MPD — KEZAD",
+    "ref": "AE0069879.2288",
+    "last_updated": "2026-06-13",
+    "current_week": 10,
+    "total_weeks": 29,
+    "project_start": "2026-04-03",
+    "project_end": "2026-10-31",
+    "overall_status": "at_risk",
+    "status_reason": "Contract now signed (11 Jun). Full CMP production underway. DMT path unblocked via ADPG workaround. CMP submission Wk-11 now critical."
+  },
+  "stages": [
+    {
+      "id": "S0",
+      "name": "INCEPTION",
+      "tasks": [
+        {
+          "id": "T1",
+          "name": "Project inception",
+          "planned_start_wk": 0,
+          "planned_end_wk": 1,
+          "progress_pct": 100,
+          "status": "complete"
+        },
+        {
+          "id": "T2",
+          "name": "Return Brief V7 & Design Freeze 1",
+          "planned_start_wk": 1,
+          "planned_end_wk": 4,
+          "progress_pct": 100,
+          "status": "complete",
+          "actual_completion": "2026-04-24"
+        }
+      ]
+    },
+    {
+      "id": "S1",
+      "name": "STAGE 1 — CONCEPT MASTER PLAN",
+      "tasks": [
+        {
+          "id": "T3",
+          "name": "Concept Master Plan design",
+          "planned_start_wk": 2,
+          "planned_end_wk": 10,
+          "progress_pct": 52,
+          "status": "in_progress",
+          "notes": "Option 3B (full GFA / hybrid density) selected May 14. Re-baselined to rectangular plot."
+        },
+        {
+          "id": "T4",
+          "name": "Transport & utility modelling",
+          "planned_start_wk": 3,
+          "planned_end_wk": 10,
+          "progress_pct": 28,
+          "status": "at_risk",
+          "notes": "Transport Planning severely under-resourced — AED 77k of AED 637k C2C spent. Front-loading required."
+        },
+        {
+          "id": "T5",
+          "name": "ITC / DMT submission prep",
+          "planned_start_wk": 7,
+          "planned_end_wk": 11,
+          "progress_pct": 5,
+          "status": "at_risk",
+          "notes": "Affection Plan still outstanding — DMT Enquiry Meeting cannot be booked without it."
+        }
+      ]
+    },
+    {
+      "id": "S1R",
+      "name": "AUTHORITY REVIEW — CMP",
+      "tasks": [
+        {
+          "id": "T6",
+          "name": "CMP authority review (DMT/ITC)",
+          "planned_start_wk": 11,
+          "planned_end_wk": 15,
+          "progress_pct": 0,
+          "status": "not_started",
+          "notes": "ITC review cycle minimum 6 months. Early submission critical."
+        }
+      ]
+    },
+    {
+      "id": "S2",
+      "name": "STAGE 2 — DETAILED MASTER PLAN",
+      "tasks": [
+        {
+          "id": "T7",
+          "name": "Detailed Master Plan design",
+          "planned_start_wk": 15,
+          "planned_end_wk": 22,
+          "progress_pct": 0,
+          "status": "not_started"
+        },
+        {
+          "id": "T8",
+          "name": "DMP submission package",
+          "planned_start_wk": 21,
+          "planned_end_wk": 24,
+          "progress_pct": 0,
+          "status": "not_started"
+        }
+      ]
+    },
+    {
+      "id": "S2R",
+      "name": "AUTHORITY REVIEW — DMP",
+      "tasks": [
+        {
+          "id": "T9",
+          "name": "DMP authority sign-off",
+          "planned_start_wk": 24,
+          "planned_end_wk": 29,
+          "progress_pct": 0,
+          "status": "not_started",
+          "target_date": "2026-10-31"
+        }
+      ]
+    }
+  ],
+  "ai_schedule_analysis": {
+    "weeks_behind_plan": 2,
+    "hours_variance_pct": -75,
+    "model_confidence_pct": 92,
+    "top_recommendation": "Front-load transport modelling to protect Wk-11 CMP authority submission. Expedite contract execution to unblock team.",
+    "critical_path_float_weeks": 1.5
+  }
+}

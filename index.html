@@ -172,7 +172,7 @@
 // For local use, leave as './data'
 const DATA_BASE = window.location.hostname === 'localhost' || window.location.protocol === 'file:'
   ? './data'
-  : './data'; // GitHub Pages: same folder, relative path works
+  : 'https://raw.githubusercontent.com/harkeerat22/danube-dashboard/main/data';
 
 let DATA = {}; // Populated after fetch
 let charts = {};
